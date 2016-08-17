@@ -14,13 +14,29 @@ var actions = {
     utils.serveAssets(res, path, utils.readPage);
   },
   'POST': function(req, res) {
-    var path = archive.paths.archivedSites + req.url;
-    console.log(req.headers);
-//    utils.storeAssets(res)
+    // var path = archive.paths.archivedSites + req.url;
+    res.writeHead(302, {'Content-Type': 'text/html'});
+    console.log('THIS IS POST FUNCTION - DATA COMING NEXT');
+    utils.collectData(req, function(data) {
+      var path = data.slice(data.indexOf('=') + 1);
+      path = path + '\n';
+      // console.log(path);
+      // var sitesDirectory = archive.paths.archivedSites;
+      var sitesList = archive.paths.list;
+      utils.writePage(sitesList, path, function(err) {
+        if (err) {
+          console.log(err);
+        }
+        utils.serveAssets(res, sitesList, function(err, data) {
+          // console.log(data);
+          res.end();
+        });
+      });
+    });
   },
   'OPTIONS': function(req, res) {
   }
-}
+};
 
 exports.handleRequest = function (req, res) {
   var action = actions[req.method];

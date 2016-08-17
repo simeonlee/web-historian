@@ -25,17 +25,27 @@ exports.readPage = function(err, data, res) {
     res.write(data);
     res.end();
   }
-}
+};
 
 exports.storeAssets = function(res, asset, callback) {
 
-}
+};
 
 exports.writePage = function(file, data, callback) {
   fs.appendFile(file, data, function(err) {
     callback();
   });
-}
+};
 
+exports.collectData = function(request, callback) {
+  // var data = '';
+  request.on('data', function(data) {
+    var string = data.toString();
+    callback(string);
+  });
+  // request.on('end', function() {
+  //   callback(JSON.parse(data));
+  // });
+};
 
 // As you progress, keep thinking about what helper functions you can put here!
