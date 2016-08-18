@@ -7,7 +7,7 @@ exports.headers = {
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10, // Seconds.
-  'Content-Type': 'text/html'
+  // 'Content-Type': 'text/html'
 };
 
 exports.serveAssets = function(res, asset, callback) {
@@ -19,9 +19,10 @@ exports.serveAssets = function(res, asset, callback) {
 exports.readPage = function(err, data, res) {
   if (err) {
     res.writeHead(404);
+    console.log(err);
     res.end();
   } else {
-    res.writeHead(200, {'Content-Type': 'text/html'});
+    // res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(data);
     res.end();
   }

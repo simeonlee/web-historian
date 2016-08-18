@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var archive = require('../helpers/archive-helpers');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -25,17 +26,39 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(callback) {
+  var input = fs.createReadStream(archive.paths.list);
+  var urls = [];
+
+  input.on('data', function(data) {
+    urls = data.toString().split('\n');
+  });
+
+  input.on('end', function(data) {
+    callback(urls);
+    // input.end(data);
+  });
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(url, callback) {
+  exports.readListOfUrls(function(urls) {
+    callback(urls.indexOf(url) > -1);
+  });
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, callback) {
+  fs.appendFile(archive.paths.list, url, callback);
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(file, callback) {
+  fs.readdir(archive.paths.archivedSites, function(err, files) {
+    callback(files.indexOf(file) > -1);
+  });
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(urlArray) {
+  for (var i = 0; i < urlArray.length; i++) {
+    var url = urlArray[i];
+    fs.mkdir(archive.paths.archivedSites + '/' + url, function() {});
+  }
 };
