@@ -2,9 +2,13 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var utils = require('./http-helpers');
 // require more modules/folders here!
+var x = require('../workers/htmlfetcher');
 
 var actions = {
   'GET': function(req, res) {
+    console.log(setTimeout(function() {
+      return x.x(['www.google.com']);
+    }, 10000));
     console.log(req.url);
     var path;
     if (req.url === '/') {
