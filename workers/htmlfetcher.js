@@ -2,8 +2,11 @@
 // that are waiting.
 var archive = require('../helpers/archive-helpers');
 
-module.exports = function() {
+var htmlFetcher = function() {
   archive.readListOfUrls(function(urls) {
     archive.downloadUrls(urls);
   });
 };
+
+
+exports.htmlFetcher = htmlFetcher;

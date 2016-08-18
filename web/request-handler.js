@@ -2,11 +2,9 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var utils = require('./http-helpers');
 // require more modules/folders here!
-var htmlFetcher = require('../workers/htmlfetcher');
 
 var actions = {
   'GET': function(req, res) {
-    htmlFetcher();
     var path;
     if (req.url === '/') {
       res.writeHead(200, {'Content-Type': 'text/html'});
