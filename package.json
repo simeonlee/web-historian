@@ -12,7 +12,7 @@
     "postinstall": "curl -s https://raw.githubusercontent.com/hackreactor-labs/pomander/master/bin/install | bash",
     "start": "node ./web/basic-server.js",
     "start:es6": "babel-node ./web/basic-server.js",
-    "test": "mocha test",
+    "test": "mocha test --watch",
     "test:es6": "mocha --compilers js:babel-register test",
     "lint": "eslint ./"
   },
@@ -21,6 +21,7 @@
     "cron": "^1.1.0",
     "node-cron": "^1.1.1",
     "nodemon": "^1.10.0",
+    "redis": "^2.6.2",
     "request": "^2.74.0",
     "underscore": "^1.8.3"
   },

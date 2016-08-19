@@ -19,7 +19,7 @@ exports.serveAssets = function(res, asset, callback) {
 exports.readPage = function(err, data, res) {
   if (err) {
     res.writeHead(404);
-    console.log(err);
+    // console.log(err);
     res.end();
   } else {
     // res.writeHead(200, {'Content-Type': 'text/html'});

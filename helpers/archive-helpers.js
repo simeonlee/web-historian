@@ -3,6 +3,7 @@ var path = require('path');
 var _ = require('underscore');
 var archive = require('../helpers/archive-helpers');
 var request = require('request');
+var Promise = require('bluebird');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -37,7 +38,6 @@ exports.readListOfUrls = function(callback) {
 
   input.on('end', function(data) {
     callback(urls);
-    // input.end(data);
   });
 };
 
@@ -51,28 +51,41 @@ exports.addUrlToList = function(url, callback) {
   fs.appendFile(archive.paths.list, url + '\n', callback);
 };
 
-exports.isUrlArchived = function(file, callback) {
-  fs.readdir(archive.paths.archivedSites, function(err, files) {
-    callback(files.indexOf(file) > -1);
+exports.isUrlArchived = function(file) {
+  return new Promise(function(resolve, reject) {
+    fs.readdir(archive.paths.archivedSites, function(err, files) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(files.indexOf(file) > -1);
+      }
+    });
   });
 };
 
-exports.downloadUrls = function(urlArray, callback) {
+exports.downloadUrls = function(urlArray) {
   for (var i = 0; i < urlArray.length; i++) {
-    var url = urlArray[i];
-    exports.isUrlArchived(url, function(bool) {
-      if (!bool) {
-        request('http://' + url, function(err, response, body) {
-          // console.log(body);
-          fs.writeFile(exports.paths.archivedSites + '/' + url, body, function(err) {
-            if (err) {
-              throw err;
-            }
-            console.log(url + ' downloaded to archive');
-          });
+    (function(i) {
+      var url = urlArray[i];
+      archive.isUrlArchived(url)
+        .then(function(archived) {
+          if (archived) {
+            console.log(url);
+            //throw new Error('This url is not archived in our database');
+          } else {
+            request('http://' + url, function(err, response, body) {
+              fs.writeFile(exports.paths.archivedSites + '/' + url, body, function(err) {
+                if (err) {
+                  throw err;
+                }
+                console.log(url + ' downloaded to archive');
+              });
+            });
+          }
+        })
+        .catch(function(err) {
+          console.log(err);
         });
-      }
-    });
-    // fs.mkdir(archive.paths.archivedSites + '/' + url, function() {});
+    })(i);
   }
 };

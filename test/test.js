@@ -64,8 +64,11 @@ describe('server', function() {
           .type('form')
           .send({ url: url })
           .expect(302, function (err) {
+            // console.log(err);
             if (!err) {
               var fileContents = fs.readFileSync(archive.paths.list, 'utf8');
+              // console.log('-----> FILE CONTENTS' + fileContents);
+              // console.log('-----> URL++NEW LINE' + url + '\n');
               expect(fileContents).to.equal(url + '\n');
             }
 
@@ -130,15 +133,40 @@ describe('archive helpers', function() {
       var counter = 0;
       var total = 2;
 
-      archive.isUrlArchived('www.example.com', function (exists) {
-        expect(exists).to.be.true;
-        if (++counter === total) { done(); }
-      });
+      archive.isUrlArchived('www.example.com')
+        .then(function(archived) {
+          if (!archived) {
+            throw new Error('This is not archived and it should be!');
+          } else {
+            expect(archived).to.be.true;
+            if (++counter === total) { done(); }
+          }
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+      archive.isUrlArchived('www.notarchived.com')
+        .then(function(archived) {
+          if (!archived) {
+            expect(archived).to.be.false;
+            if (++counter === total) { done(); }
+          } else {
+            throw new Error('This is archived and not meant to be!');
+          }
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
 
-      archive.isUrlArchived('www.notarchived.com', function (exists) {
-        expect(exists).to.be.false;
-        if (++counter === total) { done(); }
-      });
+      // archive.isUrlArchived('www.example.com', function (err, exists) {
+      //   expect(exists).to.be.true;
+      //   if (++counter === total) { done(); }
+      // });
+
+      // archive.isUrlArchived('www.notarchived.com', function (err, exists) {
+      //   expect(exists).to.be.false;
+      //   if (++counter === total) { done(); }
+      // });
     });
   });
 
@@ -151,7 +179,7 @@ describe('archive helpers', function() {
       setTimeout(function () {
         expect(fs.readdirSync(archive.paths.archivedSites)).to.deep.equal(urlArray);
         done();
-      }, 500);
+      }, 1000);
     });
   });
 });
